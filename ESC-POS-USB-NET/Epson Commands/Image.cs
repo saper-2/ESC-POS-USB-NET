@@ -2,18 +2,24 @@
 using System;
 using System.IO;
 using ESC_POS_USB_NET.Interfaces.Command;
+//#if NETSTANDARD2_0
 using System.Drawing;
+//#else
+//using System.Drawing;
+//#endif
 
 namespace ESC_POS_USB_NET.EpsonCommands
 {
     public class Image : IImage
     {
-        private static BitmapData GetBitmapData(Bitmap bmp)
+
+
+        private static BitmapData GetBitmapData(Bitmap bmp, int dotsInLine=576)
         {
   
                 var threshold = 127;
                 var index = 0;
-                double multiplier = 576; // this depends on your printer model.
+                double multiplier = dotsInLine * 1.0; // this depends on your printer model.
                 double scale = (double)(multiplier / (double)bmp.Width);
                 int xheight = (int)(bmp.Height * scale);
                 int xwidth = (int)(bmp.Width * scale);
@@ -39,12 +45,25 @@ namespace ESC_POS_USB_NET.EpsonCommands
                     Height = (int)(bmp.Height * scale),
                     Width = (int)(bmp.Width * scale)
                 };
-       
+
         }
 
-        byte[] IImage.Print(Bitmap image)
+
+        /// DotsInLine:
+        /// This depends on your printer head, most common printers have 203dpi that is 8dot/1mm.Usually printer have about 5mm margins too.
+        /// High Resolution print heads have 300dpi, that is about 12dots/1mm but those are much more expensive and less popular.
+        /// Usually this is in Printer specification table in your printeer manual.
+        /// So if you have printer for 58mm ribbon(57mm), then: 58mm - (2x5mm margin) = 48mm active area, then knowing 8dots/1mm: 48*8=384 dots
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="DotsInLine">This depends on your printer head</param>
+        /// <returns></returns>
+        byte[] IImage.Print(Bitmap image, int DotsInLine)
         {
-            var data = GetBitmapData(image);
+            var data = GetBitmapData(image, DotsInLine);
             BitArray dots = data.Dots;
             byte[] width = BitConverter.GetBytes(data.Width);
 
@@ -52,9 +71,10 @@ namespace ESC_POS_USB_NET.EpsonCommands
             MemoryStream stream = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(stream);
 
+            // reset printer settings
             bw.Write((char)0x1B);
             bw.Write('@');
-
+            // set line height to 24dots - because we're using 24dots height mode
             bw.Write((char)0x1B);
             bw.Write('3');
             bw.Write((byte)24);
@@ -63,7 +83,7 @@ namespace ESC_POS_USB_NET.EpsonCommands
             {
                 bw.Write((char)0x1B);
                 bw.Write('*');         // bit-image mode
-                bw.Write((byte)33);    // 24-dot double-density
+                bw.Write((byte)33);    // 24-dot double-density ; some printers have 24-dot single-width
                 bw.Write(width[0]);  // width low byte
                 bw.Write(width[1]);  // width high byte
 
