@@ -21,6 +21,9 @@ namespace ESC_POS_USB_NET.Printer
 
         public byte[] Buffer { get { return _buffer; } }
 
+        /// <summary>
+        /// Define printer printhead dots count
+        /// </summary>
         public int DotsInLine { get; set; } = 576;
 
         public Printer(string printerName, string codepage= "IBM860")
@@ -132,6 +135,11 @@ namespace ESC_POS_USB_NET.Printer
             BoldMode("Bold Text");
             UnderlineMode("Underlined text");
             Separator();
+            AppendWithoutLf("Text ");
+            ReverseModeNoLF("reversed");
+            Append(" and normal.");
+            ReverseMode("Reversed text line.");
+            Separator();
             ExpandedMode(PrinterModeState.On);
             Append("Expanded - 23 COLUMNS");
             Append("1...5...10...15...20..23");
@@ -220,6 +228,17 @@ namespace ESC_POS_USB_NET.Printer
             Append(_command.FontMode.Condensed(state));
         }
 
+        public void ReverseMode(string value)
+        {
+            Append(_command.FontMode.Reverse(value));
+        }
+
+        public void ReverseModeNoLF(string value)
+        {
+            Append(_command.FontMode.ReverseNoLF(value));
+        }
+
+
         public void NormalWidth()
         {
             Append(_command.FontWidth.Normal());
@@ -279,6 +298,11 @@ namespace ESC_POS_USB_NET.Printer
         public void QrCode(string qrData, QrCodeSize qrCodeSize, QrCodeErrorCorrection errorCorrection=QrCodeErrorCorrection.L, QrCodeModel qrModel=QrCodeModel.Model2, bool NoFun165=false)
         {
             Append(_command.QrCode.Print(qrData, qrCodeSize, errorCorrection, qrModel, NoFun165));
+        }
+
+        public void Code128(string code)
+        {
+            Append(_command.BarCode.Code128(code, Positions.NotPrint));
         }
 
         public void Code128(string code, Positions printString = Positions.NotPrint)
@@ -354,6 +378,12 @@ namespace ESC_POS_USB_NET.Printer
         {
             Append(_command.Image.Print(image, DotsInLine));
         }
+
+        public void Image(Bitmap image, bool scaleToWidth)
+        {
+            Append(_command.Image.Print(image, DotsInLine, scaleToWidth));
+        }
+
         public void NormalLineHeight()
         {
             Append(_command.LineHeight.Normal());

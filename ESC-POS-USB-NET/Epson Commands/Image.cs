@@ -13,57 +13,70 @@ namespace ESC_POS_USB_NET.EpsonCommands
     public class Image : IImage
     {
 
-
-        private static BitmapData GetBitmapData(Bitmap bmp, int dotsInLine=576)
+        // scaleToWidth https://github.com/mtmsuhail/ESC-POS-USB-NET/pull/68 , with my little tweaks - shrinks only bigger images
+        // image center can be done by sending before image command: Select justification=center (printer have to support this)
+        private static BitmapData GetBitmapData(Bitmap bmp, int dotsInLine=576, bool scaleToWidth=true)
         {
   
-                var threshold = 127;
-                var index = 0;
-                double multiplier = dotsInLine * 1.0; // this depends on your printer model.
-                double scale = (double)(multiplier / (double)bmp.Width);
-                int xheight = (int)(bmp.Height * scale);
-                int xwidth = (int)(bmp.Width * scale);
-                var dimensions = xwidth * xheight;
-                var dots = new BitArray(dimensions);
+            double scale = 1.0;
+            double multiplier = dotsInLine * 1.0; // this depends on your printer model.
 
-                for (var y = 0; y < xheight; y++)
+            // If scaleToWidth is true, or bitmap is wider than DotsInLine (printhead dot count), then scale/downscale image to printhead dot count.
+            if (scaleToWidth || bmp.Width>dotsInLine)
+            {
+                scale = (double)(multiplier / (double)bmp.Width);
+            }
+
+            int xheight = (int)(bmp.Height * scale);
+            int xwidth = (int)(bmp.Width * scale);
+            var dimensions = xwidth * xheight;
+            var dots = new BitArray(dimensions);
+            var threshold = 127;
+            var index = 0;
+
+            for (var y = 0; y < xheight; y++)
+            {
+                for (var x = 0; x < xwidth; x++)
                 {
-                    for (var x = 0; x < xwidth; x++)
-                    {
-                        var _x = (int)(x / scale);
-                        var _y = (int)(y / scale);
-                        var color = bmp.GetPixel(_x, _y);
-                        var luminance = (int)(color.R * 0.3 + color.G * 0.59 + color.B * 0.11);
-                        dots[index] = (luminance < threshold);
-                        index++;
-                    }
+                    var _x = (int)(x / scale);
+                    var _y = (int)(y / scale);
+                    var color = bmp.GetPixel(_x, _y);
+                    var luminance = (int)(color.R * 0.3 + color.G * 0.59 + color.B * 0.11);
+                    dots[index] = (luminance < threshold);
+                    index++;
                 }
+            }
 
-                return new BitmapData()
-                {
-                    Dots = dots,
-                    Height = (int)(bmp.Height * scale),
-                    Width = (int)(bmp.Width * scale)
-                };
+            return new BitmapData()
+            {
+                Dots = dots,
+                Height = (int)(bmp.Height * scale),
+                Width = (int)(bmp.Width * scale)
+            };
 
         }
 
 
-        /// DotsInLine:
-        /// This depends on your printer head, most common printers have 203dpi that is 8dot/1mm.Usually printer have about 5mm margins too.
-        /// High Resolution print heads have 300dpi, that is about 12dots/1mm but those are much more expensive and less popular.
-        /// Usually this is in Printer specification table in your printeer manual.
-        /// So if you have printer for 58mm ribbon(57mm), then: 58mm - (2x5mm margin) = 48mm active area, then knowing 8dots/1mm: 48*8=384 dots
+        // DotsInLine:
+        //   This depends on your printer head, most common printers have 203dpi that is 8dot/1mm.Usually printer have about 5mm margins too.
+        //   High Resolution print heads have 300dpi, that is about 12dots/1mm but those are (very) much more expensive and less popular.
+        //   Usually this information should be in Printer specification table in your printer manual.
+        //   So if you have printer for 58mm ribbon(57mm), then: 58mm - (2x5mm margin) = 48mm active area, then knowing 8dots/1mm: 48*8=384 dots
+        // scaleToWidth:
+        //   Like in PR https://github.com/mtmsuhail/ESC-POS-USB-NET/pull/68 , but I added condition that
+        //   if image is wider than printhead dot count, then image will be shrinked to this width.
+        //   If you want image to be centerd - just add command `AlignCenter` (ESC/POS: `<ESC>a<n>`) before adding image to print - but not every printer may support this (usually don't support this (-: )
 
         /// <summary>
-        /// 
+        /// Print image
         /// </summary>
         /// <param name="image"></param>
         /// <param name="DotsInLine">This depends on your printer head</param>
+        /// <param name="scaleToWidth">If false then image scale will be preserved, unless image is wider than DotsInLine then image will be shrinked</param>
         /// <returns></returns>
-        byte[] IImage.Print(Bitmap image, int DotsInLine)
+        byte[] IImage.Print(Bitmap image, int DotsInLine, bool scaleToWidth)
         {
-            var data = GetBitmapData(image, DotsInLine);
+            var data = GetBitmapData(image, DotsInLine, scaleToWidth);
             BitArray dots = data.Dots;
             byte[] width = BitConverter.GetBytes(data.Width);
 

@@ -6,6 +6,6 @@ namespace ESC_POS_USB_NET.Interfaces.Command
     {
         
 
-        byte[] Print(Bitmap image, int DotsInLine);
+        byte[] Print(Bitmap image, int DotsInLine, bool scaleToWidth=true);
     }
 }

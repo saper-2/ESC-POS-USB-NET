@@ -39,6 +39,7 @@ namespace ESC_POS_USB_NET.Interfaces.Printer
         void PartialPaperCut();
         void OpenDrawer();
         void Image(Bitmap image);
+        void Image(Bitmap image, bool scaleToWidth);
         void QrCode(string qrData);
         void QrCode(string qrData, QrCodeSize qrCodeSize);
         /// <summary>
@@ -50,6 +51,7 @@ namespace ESC_POS_USB_NET.Interfaces.Printer
         /// <param name="qrModel"></param>
         /// <param name="NoFun165">Some, especially CN printers don't support this command (set QrCode Model) and print instead some text</param>
         void QrCode(string qrData, QrCodeSize qrCodeSize, QrCodeErrorCorrection errorCorrection, QrCodeModel qrModel, bool NoFun165);
+        void Code128(string code);
         void Code128(string code, Positions positions);
         void Code128(byte[] code, Positions positions);
         void Code128(string code, Positions positions, BarCodeCode128Charset startCharset, BarCodeBarWidth barWidth, byte codeHeight);

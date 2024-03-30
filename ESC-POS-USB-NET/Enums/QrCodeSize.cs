@@ -12,7 +12,18 @@
         // extended by more sizes
         Size3, //=6
         Size4, //=7
-        Size5  //=8
+        Size5,  //=8
+        Size6,  //=9
+        Size7,  //=10
+        Size8,  //=11
+        Size9,  //=12
+        Size10, //=13
+        Size11, //=14
+        Size12, //=15
+        Size13, //=16
+
     }
+    // no need for all those sizes (up to 16dots/module) :-) , I don't see use for biggers than Size5 (8dots) , but let it's have it...
+    // https://github.com/mtmsuhail/ESC-POS-USB-NET/pull/22 :-D
 }
 
