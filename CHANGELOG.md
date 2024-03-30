@@ -1,5 +1,7 @@
-## # commit: # (2024-03-30 ??:??GMT+1)
+## # commit: #6842df1 (2024-03-30 14:53GMT+1)
 More PRs combined into this one...
+
+Added [file for some details about different printers](SPECIFIC-PRINTER-INFO.md) .
 
 #### Changes:
 - Added more sizes to enum `enums/QrCodeSize.cs`: 
@@ -15,9 +17,11 @@ More PRs combined into this one...
     - `ReverseModeNoLF` ,
   - Updated `TestPrint` for Reverse test prints,
   - Added function `Image` with `scaleToWidth` parameter,
+  - Added another function `Code128(string)` that have only one parameter *(VS complains that it can't decide which function to pick if it have one parameter)*
 - `Interfaces/IPrint.cs`
   - Updated for Reverse routines definitions,
   - updated for `Image` new function,
+  - updated for `Code128` new function,
 - `Epson Commands/Image.cs` updated:
   - function `GetBitmapData`:
     - added parameter `scaleToWidth` (default **true**), if `false` image won't be up-scaled to printhead dot count (printing width), **BUT:** image will be still down-scaled if is wider that printhead print width (printhead dot count).

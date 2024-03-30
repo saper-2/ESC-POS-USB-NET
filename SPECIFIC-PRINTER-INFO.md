@@ -3,11 +3,11 @@
 This is a place to add some details about different printers and what they support or don't - especially those cheap ones from aliexpress/banggood/dhgate/gearbest/taobao/and so on....
 
 Printer list:
-- MPT-II (USB&BT), mobile, 57mm media, *(Version: `B58G_v2.5.2e`)*
+- MPT-II (USB/BT), mobile, 57mm media, *(Version: `B58G_v2.5.2e`)*
 
 
 ----
-## MPT-II [Version: `B58G_v2.5.2e`]
+## :printer: MPT-II [Version: `B58G_v2.5.2e`]
 
 This is portable 57mm media thermal printer, it have USB (older models micro-USB, newer USB-C) & BT for communication. 
 
@@ -15,7 +15,7 @@ Pressing Feed & switching printer on will print test print & printer S/W info.
 
 In Windows it's recognized as some Generic usb printer and windows won't install automatically drivers. I get it working with XP-58 recipe printer drivers from Xprinter.
 
-**Specification:**
+#### **Specification:**
 - Power: 1x 18650 3,7V/2600mAh Li-Ion
 - media: recipe paper rolls width: 57mm , max. diameter about 40mm
 - Print width: 48mm (5mm margins from both sides)
@@ -27,7 +27,7 @@ In Windows it's recognized as some Generic usb printer and windows won't install
 - [System] Modify: `Jun 23 2023gd`
 - [Blue Tooth] Dev type: `040680`
 - [Blue Tooth] Baut: `460800` (Baud)
-- Code page: CP437 (U.S. Standard Europe)
+- Default code page: CP437 (U.S. Standard Europe)
 - Font:
   - 12x24 (Font A), 
   - 8x16 (Font B) - narrow variant - this font is not specified officially,
@@ -49,7 +49,7 @@ In Windows it's recognized as some Generic usb printer and windows won't install
 
 *I did not misspelled some words - those are printed that way from printer*
 
-**Printer 'quirks':**
+#### :small_orange_diamond: **Printer 'quirks':**
 
 If printer receive unknown command it will either: ignore it, print some random text or hang-up .
 
