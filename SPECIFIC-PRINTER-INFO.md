@@ -46,6 +46,7 @@ In Windows it's recognized as some Generic usb printer and windows won't install
   - CODE93,
   - UPC-A & E,
   - QRCode - :warning: MPT-II don't support command "QrCode Model".
+- CPU: Barrot BR8551 (DayStar-Elec) - 32bit RISC @96MHz with BT5.2, 512KiB flash, 96KiB RAM, support OTA BT/UART, 29 GPIO, QFN-48 6x6mm
 
 *I did not misspelled some words - those are printed that way from printer*
 
